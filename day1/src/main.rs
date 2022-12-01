@@ -3,57 +3,57 @@ use std::io::BufRead;
 use std::io::BufReader;
 
 fn main() {
-    part_one();
-    part_two();
+    println!("{}", part_one());
+    println!("{}", part_two());
 }
 
-fn part_two() {
-    let mut one = 0;
-    let mut two = 0;
-    let mut three = 0;
-    let mut current = 0;
+fn open(filename: &str) -> BufReader<File> {
+    BufReader::new(File::open(filename).unwrap())
+}
 
-    let br = BufReader::new(File::open("input.txt").unwrap());
+fn get_sorted_entries(br: BufReader<File>) -> Vec<i32> {
+    let mut current = 0;
+    let mut entries = vec![];
 
     for line in br.lines() {
         let line = line.unwrap();
         if line.is_empty() {
-            if current > one {
-                three = two;
-                two = one;
-                one = current;
-            } else if current > two {
-                three = two;
-                two = current;
-            } else if current > three {
-                three = current;
-            }
+            entries.push(current);
             current = 0;
         } else {
             current += line.parse::<i32>().unwrap();
         }
     }
-
-    println!("{}", one + two + three);
+    entries.sort();
+    entries
 }
 
-fn part_one() {
-    let mut largest = 0;
-    let mut current = 0;
+fn part_two() -> i32 {
+    let br = open("input.txt");
+    let sorted = get_sorted_entries(br);
 
-    let br = BufReader::new(File::open("input.txt").unwrap());
+    sorted.get(sorted.len() - 1).unwrap()
+        + sorted.get(sorted.len() - 2).unwrap()
+        + sorted.get(sorted.len() - 3).unwrap()
+}
 
-    for line in br.lines() {
-        let line = line.unwrap();
-        if line.is_empty() {
-            if current > largest {
-                largest = current;
-            }
-            current = 0;
-        } else {
-            current += line.parse::<i32>().unwrap();
-        }
+fn part_one() -> i32 {
+    let br = open("input.txt");
+    let sorted = get_sorted_entries(br);
+    *sorted.last().unwrap()
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn part_one() {
+        let result = super::part_one();
+        assert_eq!(result, 71924);
     }
 
-    println!("{}", largest);
+    #[test]
+    fn part_two() {
+        let result = super::part_two();
+        assert_eq!(result, 210406);
+    }
 }
