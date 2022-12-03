@@ -14,7 +14,7 @@ fn get_input(filename: &str) -> BufReader<File> {
 fn part_one() -> i32 {
     let mut result = 0;
     for line in get_input("input.txt").lines() {
-        result += char_to_value(&get_common_item_in_line(&line.unwrap()).unwrap());
+        result += char_to_value(get_common_item_in_line(&line.unwrap()).unwrap());
     }
     result
 }
@@ -31,9 +31,9 @@ fn part_two() -> i32 {
         two = lines.next().unwrap().unwrap();
         three = lines.next().unwrap().unwrap();
 
-        result += char_to_value(&get_common_item_in_three_lines((&one, &two, &three)).unwrap());
+        result += char_to_value(get_common_item_in_three_lines((&one, &two, &three)).unwrap());
     }
-    
+
     result
 }
 
@@ -56,11 +56,11 @@ fn get_common_item_in_three_lines((one, two, three): (&str, &str, &str)) -> Opti
     None
 }
 
-fn char_to_value(c: &char) -> i32 {
+fn char_to_value(c: char) -> i32 {
     if c.is_uppercase() {
-        return *c as i32 - 38;
+        return c as i32 - 38;
     } else {
-        return *c as i32 - 96;
+        return c as i32 - 96;
     }
 }
 
@@ -75,7 +75,7 @@ mod tests {
     #[test]
     fn part_two() {
         let result = super::part_two();
-        assert_eq!(result, 70);
+        assert_eq!(result, 2683);
     }
 
     #[test]
@@ -86,7 +86,7 @@ mod tests {
 
     #[test]
     fn test_char_to_value() {
-        assert_eq!(super::char_to_value(&'B'), 28);
-        assert_eq!(super::char_to_value(&'c'), 3);
+        assert_eq!(super::char_to_value('B'), 28);
+        assert_eq!(super::char_to_value('c'), 3);
     }
 }
