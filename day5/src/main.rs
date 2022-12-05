@@ -13,15 +13,15 @@ fn get_input(filename: &str) -> BufReader<File> {
 }
 
 fn part_one() -> String {
-    let mut result = "".to_string();
+    let filename = "input.txt";
 
-    let mut stacks = get_stacks(get_top());
-    let instructions = get_instructions();
+    let mut stacks = get_stacks(filename);
 
-    for instruction in instructions {
+    for instruction in get_instructions(filename) {
         stacks = instruction.run_one(stacks);
     }
 
+    let mut result = "".to_string();
     for i in 1..stacks.len() + 1 {
         result.push(stacks.get(&i).unwrap().last().unwrap().parse().unwrap());
     }
@@ -30,15 +30,15 @@ fn part_one() -> String {
 }
 
 fn part_two() -> String {
-    let mut result = "".to_string();
+    let filename = "input.txt";
 
-    let mut stacks = get_stacks(get_top());
-    let instructions = get_instructions();
+    let mut stacks = get_stacks(filename);
 
-    for instruction in instructions {
+    for instruction in get_instructions(filename) {
         stacks = instruction.run_two(stacks);
     }
 
+    let mut result = "".to_string();
     for i in 1..stacks.len() + 1 {
         result.push(stacks.get(&i).unwrap().last().unwrap().parse().unwrap());
     }
@@ -86,25 +86,28 @@ impl Instruction {
     }
 }
 
-fn get_stacks(top: Vec<String>) -> HashMap<usize, Vec<String>> {
-    let mut parsed_top: Vec<Vec<String>> = Vec::new();
-
-    for _c in top.get(0).unwrap().chars() {
-        let v = Vec::new();
-        parsed_top.push(v);
+fn get_stacks(filename: &str) -> HashMap<usize, Vec<String>> {
+    let mut reversed_top_lines: Vec<String> = Vec::new();
+    for line in get_input(filename).lines() {
+        let line = line.unwrap();
+        if !line.is_empty() {
+            reversed_top_lines.insert(0, line.to_string());
+            continue;
+        }
+        break;
     }
 
-    for line in top {
+    let mut parsed_top = vec![Vec::<String>::new(); reversed_top_lines.get(0).unwrap().len()];
+    for line in reversed_top_lines {
         let mut i = 0;
         for c in line.chars() {
-            let thing: &mut Vec<String> = parsed_top.get_mut(i).unwrap();
-            thing.push(c.to_string());
+            let stack: &mut Vec<String> = parsed_top.get_mut(i).unwrap();
+            stack.push(c.to_string());
             i += 1;
         }
     }
 
     let mut clean_top_temp: Vec<Vec<String>> = Vec::new();
-
     for item in parsed_top {
         if item.get(0).unwrap().to_string() != " ".to_string() {
             clean_top_temp.push(item);
@@ -112,14 +115,12 @@ fn get_stacks(top: Vec<String>) -> HashMap<usize, Vec<String>> {
     }
 
     let mut clean_top: Vec<Vec<String>> = Vec::new();
-
     for mut item in clean_top_temp {
         item.retain(|x| x != " ");
         clean_top.push(item);
     }
 
     let mut stacks: HashMap<usize, Vec<String>> = HashMap::new();
-
     for mut item in clean_top {
         stacks.insert(item.remove(0).parse().unwrap(), item);
     }
@@ -127,42 +128,17 @@ fn get_stacks(top: Vec<String>) -> HashMap<usize, Vec<String>> {
     stacks
 }
 
-fn get_top() -> Vec<String> {
-    let lines = get_input("input.txt").lines();
-    let mut top: Vec<String> = Vec::new();
-
-    let mut thing = true;
-    for line in lines {
-        let line = line.unwrap();
-        if line.is_empty() {
-            thing = false;
-            continue;
-        }
-        if thing {
-            top.push(line.to_string());
-            continue;
-        }
-    }
-    let mut reverse_top: Vec<String> = Vec::new();
-
-    for item in top.iter().rev() {
-        reverse_top.push(item.to_string());
-    }
-    reverse_top
-}
-
-fn get_instructions() -> Vec<Instruction> {
-    let lines = get_input("input.txt").lines();
+fn get_instructions(filename: &str) -> Vec<Instruction> {
     let mut instructions: Vec<Instruction> = Vec::new();
 
-    let mut thing = true;
-    for line in lines {
+    let mut is_instructions = false;
+    for line in get_input(filename).lines() {
         let line = line.unwrap();
         if line.is_empty() {
-            thing = false;
+            is_instructions = true;
             continue;
         }
-        if !thing {
+        if is_instructions {
             instructions.push(Instruction::from(line.to_string()));
         }
     }
