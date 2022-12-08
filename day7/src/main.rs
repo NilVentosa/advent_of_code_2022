@@ -7,6 +7,12 @@ use std::rc::Rc;
 
 const FILENAME: &str = "input.txt";
 
+//
+// used this post to figure out how to do this:
+// https://fasterthanli.me/series/advent-of-code-2022/part-7
+// I was uber stuck without knowing why
+//
+
 fn main() {
     println!("{}", part_one());
     println!("{}", part_two());
